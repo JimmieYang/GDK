@@ -1,2 +1,0 @@
-# GDK
-Test for MVC
