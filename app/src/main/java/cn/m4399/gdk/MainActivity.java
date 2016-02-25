@@ -1,10 +1,11 @@
 package cn.m4399.gdk;
 
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,14 +19,17 @@ import cn.m4399.sdk.LoginHelper;
 import cn.m4399.sdk.LoginListener;
 import cn.m4399.sdk.LoginResult;
 import cn.m4399.sdk.User;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
     private LoginHelper mLoginHelper;
     private ImageView mView;
     private TextView mText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -43,9 +47,17 @@ public class MainActivity extends AppCompatActivity {
         mLoginHelper.login(this, new LoginListener() {
             @Override
             public void onLoginFinished(final LoginResult result) {
-                if (result != null && result.isSuccess()) {
-                    showInfo(result.getUser());
-                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (result != null && result.isSuccess()) {
+                            Crouton.makeText(MainActivity.this, "登录成功!...", Style.INFO).show();
+                            showInfo(result.getUser());
+                        } else {
+                            Crouton.makeText(MainActivity.this, "登录失败,,,", Style.INFO).show();
+                        }
+                    }
+                });
             }
         });
     }
